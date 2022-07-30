@@ -2,11 +2,11 @@
 
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
 - **Conformance Classes:** 
-  - Item Search binding: <https://api.stacspec.org/v1.0.0-rc.1/item-search#fields>
-  - STAC Features binding: <https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features#fields>
+  - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.1/item-search#fields>
+  - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features#fields>
 - - **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/blob/main/README.md#maturity-classification):** Candidate
 - **Dependents:**
-  - [Item Search](https://github.com/radiantearth/stac-api-spec/blob/main/item-search)
+  - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/blob/main/item-search)
   - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/blob/main/ogcapi-features)
 
 STAC API by default returns every attribute in an item. However, Item objects can have hundreds of fields, or incredibly large
@@ -14,7 +14,7 @@ geometries, and even smaller Item objects can get big when millions are requeste
 fragment provides a mechanism for clients to request that servers to explicitly include or exclude certain fields.
 
 This fragment may be bound to either or both of 
-[Item Search](https://github.com/radiantearth/stac-api-spec/blob/main/item-search) (`/search` endpoint) or
+[STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/blob/main/item-search) (`/search` endpoint) or
 [STAC API - Features](https://github.com/radiantearth/stac-api-spec/blob/main/ogcapi-features) (`/collections/{collectionId}/items` endpoint) by
 advertising the relevant conformance class. 
 
