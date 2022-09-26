@@ -4,8 +4,8 @@
 - **Conformance Classes:** 
   - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.1/item-search#fields>
   - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features#fields>
-- - **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/blob/main/README.md#maturity-classification):** Candidate
-- **Dependents:**
+- **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/blob/main/README.md#maturity-classification):** Candidate
+- **Dependencies:**
   - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/blob/main/item-search)
   - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/blob/main/ogcapi-features)
 
