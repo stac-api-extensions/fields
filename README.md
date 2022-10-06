@@ -1,4 +1,4 @@
-# STAC API - Fields Fragment
+# STAC API - Fields Extension
 
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
 - **Conformance Classes:** 
