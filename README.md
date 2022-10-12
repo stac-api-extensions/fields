@@ -1,29 +1,30 @@
-# STAC API - Fields Fragment
+# STAC API - Fields Extension
 
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
 - **Conformance Classes:** 
   - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.1/item-search#fields>
   - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features#fields>
-- **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/README.md#maturity-classification):** Candidate
+- **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/main/README.md#maturity-classification):** Candidate
 - **Dependencies:**
   - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/item-search)
   - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/ogcapi-features)
 
-STAC API by default returns every attribute in an item. However, Item objects can have hundreds of fields, or incredibly large
-geometries, and even smaller Item objects can get big when millions are requested but not all information is used. This
-fragment provides a mechanism for clients to request that servers to explicitly include or exclude certain fields.
+By default, STAC API endpoints that return Item objects return every field of those Items. However,
+Item objects can have hundreds of fields, or large
+geometries, and even smaller Item objects can add up when large numbers of them are in results. Frequently, not all
+fields in an Item are used, so this
+specification provides a mechanism for clients to request that servers to explicitly include or exclude certain fields.
 
-This fragment may be bound to either or both of 
+This behavior may be bound to either or both of 
 [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/item-search) (`/search` endpoint) or
-[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/ogcapi-features) (`/collections/{collectionId}/items` endpoint) by
-advertising the relevant conformance class. 
+[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/ogcapi-features)
+(`/collections/{collectionId}/items` endpoint) by advertising the relevant conformance class. 
 
 When used in a POST request with `Content-Type: application/json`, this adds an attribute `fields` with 
 an object value to the core JSON search request body. The `fields` object contains two attributes with string array 
 values, `include` and `exclude`.
 
-When used with GET or POST with `Content-Type: application/x-www-form-urlencoded` or 
-`Content-Type: multipart/form-data`, the semantics are the same, except the syntax is a single parameter `fields` with 
+When used with GET, the semantics are the same, except the syntax is a single parameter `fields` with 
 a comma-separated list of attribute names, where `exclude` values are those prefixed by a `-` and `include` values are 
 those with no prefix, e.g., `-geometry`, or `id,-geometry,properties`.
 
@@ -39,8 +40,8 @@ Implementations are also not required to implement semantics for nested values w
 exclude attributes of that object, e.g., include `properties` but exclude `properties.datetime`.
 
 No error must be returned if a specified field has no value for it in the catalog. For example, if the attribute 
-"properties.eo:cloud_cover" is specified but there is no cloud cover value for an Item or the API does not even 
-support the EO Extension, a successful HTTP response must be returned and the Item entities will not contain that 
+"properties.eo:cloud_cover" is specified but there is no cloud cover value for an Item, a successful HTTP response
+must be returned and the Item entities will not contain that 
 attribute. 
 
 If no `fields` are specified, the response is **must** be a valid
@@ -50,7 +51,13 @@ and `geometry` are excluded, the entity will not even be a valid GeoJSON Feature
 will not be a valid STAC Item.
 
 Implementations may return attributes not specified, e.g., id, but must avoid anything other than a minimal entity 
-representation. 
+representation.
+
+This specification does not yet require the implementation of an "-ables" endpoint (like CQL2 does for queryables)
+that defines the names of the
+fields that can be selected, so implementations must provide this out-of-band. Implementers may choose to require
+fields in Item Properties to be prefixed with `properties.` or not, or support use of both the prefixed and non-prefixed
+name, e.g., `properties.datetime` or `datetime`.
 
 ## Include/Exclude Semantics 
 
