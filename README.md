@@ -2,12 +2,12 @@
 
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
 - **Conformance Classes:** 
-  - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.1/item-search#fields>
-  - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.1/ogcapi-features#fields>
+  - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.2/item-search#fields>
+  - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.2/ogcapi-features#fields>
 - **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/main/README.md#maturity-classification):** Candidate
 - **Dependencies:**
-  - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/item-search)
-  - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/ogcapi-features)
+  - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/item-search)
+  - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/ogcapi-features)
 
 By default, STAC API endpoints that return Item objects return every field of those Items. However,
 Item objects can have hundreds of fields, or large
@@ -16,8 +16,8 @@ fields in an Item are used, so this
 specification provides a mechanism for clients to request that servers to explicitly include or exclude certain fields.
 
 This behavior may be bound to either or both of 
-[STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/item-search) (`/search` endpoint) or
-[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1/ogcapi-features)
+[STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/item-search) (`/search` endpoint) or
+[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/ogcapi-features)
 (`/collections/{collectionId}/items` endpoint) by advertising the relevant conformance class. 
 
 When used in a POST request with `Content-Type: application/json`, this adds an attribute `fields` with 
@@ -45,7 +45,7 @@ must be returned and the Item entities will not contain that
 attribute. 
 
 If no `fields` are specified, the response is **must** be a valid
-[ItemCollection](https://github.com/radiantearth/stac-spec/tree/v1.0.0-rc.1/itemcollection/README.md). If a client excludes
+[ItemCollection](https://github.com/radiantearth/stac-spec/tree/v1.0.0-rc.2/itemcollection/README.md). If a client excludes
 attributes that are required in a STAC Item, the server may return an invalid STAC Item. For example, if `type` 
 and `geometry` are excluded, the entity will not even be a valid GeoJSON Feature, or if `bbox` is excluded then the entity 
 will not be a valid STAC Item.
