@@ -1,13 +1,23 @@
-# STAC API - Fields Extension
+# STAC API - Fields Extension Specification
 
+- [STAC API - Fields Extension Specification](#stac-api---fields-extension-specification)
+  - [Overview](#overview)
+  - [Include/Exclude Semantics](#includeexclude-semantics)
+  - [Examples](#examples)
+
+## Overview
+
+- **Title:** Fields
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
-- **Conformance Classes:** 
+- **Conformance Classes:**
   - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0-rc.2/item-search#fields>
   - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0-rc.2/ogcapi-features#fields>
-- **Extension [Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/main/README.md#maturity-classification):** Candidate
+- **Scope:** STAC API - Features, STAC API - Item Search
+- **[Extension Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/main/README.md#maturity-classification):** Candidate
 - **Dependencies:**
   - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/item-search)
   - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.2/ogcapi-features)
+- **Owner**: none
 
 By default, STAC API endpoints that return Item objects return every field of those Items. However,
 Item objects can have hundreds of fields, or large
