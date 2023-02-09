@@ -73,7 +73,7 @@ name, e.g., `properties.datetime` or `datetime`.
 
 1. If `fields` attribute is specified with an empty object, or with both `include` and `exclude` set to null or an 
 empty array, the recommended behavior is as if `include` was set to 
-`["id", "type", "geometry", "bbox", "links", "assets", "properties.datetime"]`.  This default is so that the entity 
+`["id", "type", "stac_version", "geometry", "bbox", "links", "assets", "properties.datetime"]`.  This default is so that the entity 
 returned is a valid STAC Item.  Implementations may choose to add other properties, e.g., `created`, but the number 
 of default properties attributes should be kept to a minimum.
 2. If only `include` is specified, these attributes are added to the default set of attributes (set union operation). 
