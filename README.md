@@ -35,7 +35,7 @@ an object value to the core JSON search request body. The `fields` object contai
 values, `include` and `exclude`.
 
 When used with GET, the semantics are the same, except the syntax is a single parameter `fields` with 
-a comma-separated list of attribute names, where `exclude` values are those prefixed by a `-` and `include` values are 
+a comma-separated list of field names, where `exclude` values are those prefixed by a `-` and `include` values are 
 those with no prefix, e.g., `-geometry`, or `id,-geometry,properties`.
 
 It is recommended that implementations provide exactly the `include` and `exclude` sets specified by the request, 
@@ -43,24 +43,24 @@ but this is not required. These values are only hints to the server as to the de
 contract about what the response will be. Implementations are still considered compliant if fields not specified as part of `include` 
 are in the response or ones specified as part of `exclude` are.  For example, implementations may choose to always 
 include simple string fields like `id` and `type` regardless of the `exclude` specification. However, it is recommended 
-that implementations honor excludes for attributes with more complex and arbitrarily large values 
+that implementations honor excludes for fields with more complex and arbitrarily large values 
 (e.g., `geometry`, `assets`).  For example, some Item objects may have a geometry with a simple 5 point polygon, but these 
 polygons can be very large when reprojected to EPSG:4326, as in the case of a highly-decimated sinusoidal polygons.
 Implementations are also not required to implement semantics for nested values whereby one can include an object, but
-exclude attributes of that object, e.g., include `properties` but exclude `properties.datetime`.
+exclude fields of that object, e.g., include `properties` but exclude `properties.datetime`.
 
-No error must be returned if a specified field has no value for it in the catalog. For example, if the attribute 
+No error must be returned if a specified field has no value for it in the catalog. For example, if the field 
 "properties.eo:cloud_cover" is specified but there is no cloud cover value for an Item, a successful HTTP response
 must be returned and the Item entities will not contain that 
-attribute. 
+field. 
 
 If no `fields` are specified, the response is **must** be a valid
 [ItemCollection](https://github.com/radiantearth/stac-spec/tree/v1.0.0-rc.2/itemcollection/README.md). If a client excludes
-attributes that are required in a STAC Item, the server may return an invalid STAC Item. For example, if `type` 
+fields that are required in a STAC Item, the server may return an invalid STAC Item. For example, if `type` 
 and `geometry` are excluded, the entity will not even be a valid GeoJSON Feature, or if `bbox` is excluded then the entity 
 will not be a valid STAC Item.
 
-Implementations may return attributes not specified, e.g., id, but must avoid anything other than a minimal entity 
+Implementations may return fields not specified, e.g., id, but must avoid anything other than a minimal entity 
 representation.
 
 This specification does not yet require the implementation of an "-ables" endpoint (like CQL2 does for queryables)
@@ -69,31 +69,132 @@ fields that can be selected, so implementations must provide this out-of-band. I
 fields in Item Properties to be prefixed with `properties.` or not, or support use of both the prefixed and non-prefixed
 name, e.g., `properties.datetime` or `datetime`.
 
-## Include/Exclude Semantics 
+## Include/Exclude Semantics
 
-1. If `fields` attribute is specified with an empty object, or with both `include` and `exclude` set to null or an 
-empty array, the recommended behavior is as if `include` was set to 
-`["id", "type", "geometry", "bbox", "links", "assets", "properties.datetime"]`.  This default is so that the entity 
-returned is a valid STAC Item.  Implementations may choose to add other properties, e.g., `created`, but the number 
-of default properties attributes should be kept to a minimum.
-2. If only `include` is specified, these attributes are added to the default set of attributes (set union operation). 
-3. If only `exclude` is specified, these attributes are subtracted from the union of the default set of attributes and 
-the `include` attributes (set difference operation).  This will result in an entity that is not a valid Item if any 
-of the excluded attributes are in the default set of attributes.
-4. If both `include` and `exclude` attributes are specified, semantics are that a field must be included and **not** 
-excluded.  E.g., if `properties` is included and `properties.datetime` is excluded, then `datetime` must not appear 
-in the attributes of `properties`.
+1. If `fields` attribute is specified as an empty string (GET requests) or as an empty object or an object with both `include` and `exclude` set to either null or an
+empty array (for POST requests), then the recommended behavior is to include only fields
+`type`, `stac_version`, `id`, `geometry`, `bbox`, `links`, `assets`, and `properties.datetime`. If `properties.datetime` is null, then it is recommended to include `properties.start_datetime` and `properties.end_datetime`.
+These are the default fields to ensure a valid STAC Item is returned by default.
+Implementations may choose to include other properties, e.g., `properties.created`, but the number
+of default properties fields should be kept to a minimum.
+2. If only `include` is specified, these fields should be the only fields included.
+Any additional fields provided beyond those in the `include` list should be kept
+to a minimum, as the caller has explicitly stated they do not need them.
+3. If only `exclude` is specified, the specified fields should not be
+included, but every other field available for the
+Item should be included.
+4. If `exclude` is specified and `include` is null or an empty
+array, then the `exclude` fields should be excluded from the default set.
+5. For nested fields (e.g., `properties.datetime`), the most specific path
+should be honored first, and `include` should be preferred over `exclude`. For
+example:
+    1. If a field is in `exclude`, and a nested field of that field is in
+    `include`, the nested field should be included, but no other nested
+    fields in the field should be included.  For example, if `properties` is
+    excluded and `properties.datetime` is included, then `datetime`
+    should be the only nested field in `properties`.
+    2. If a field is in `include`, and a nested field of that field is in `exclude`, the field
+    should be included, and the nested field should be excluded.  For example,
+    if `properties` is included and `properties.datetime` is excluded, then
+    `datetime` should not be in `properties`, but every other nested field should be.
+6. If the same field is present in both `include` and `exclude`, it should be included.
+7. If a field is not present in `include`, but it is present in `exclude`, it should be excluded.
+
+### `null` vs. empty vs. missing
+
+There is a semantic difference between a missing value (i.e., if `include` is not
+in the JSON object), and a `null` or empty value.  The recommended behavior
+around missing vs. null and empty values is described in [the section
+above](#includeexclude-semantics), but is summarized here for reference. "ALL"
+means that all of the Item's fields should be returned; "DEFAULT" means the
+default set (i.e. the required fields for a valid STAC Item) should be returned.
+
+| include | exclude | returned |
+| -- | -- | -- |
+| missing, `null`, or empty | missing, `null`, or empty | DEFAULT |
+| ["a", "b"] | missing, `null`, or empty | ["a", "b"] |
+| missing | ["a", "b"] | ALL except for ["a", "b"] |
+| `null` or empty | ["a", "b"] | DEFAULT except for ["a", "b"] |
+| ["a", "b"] | ["a"] | ["a", "b"] |
+| ["a"] | ["a", "b"] | ["a"] |
+| ["a.b"] | ["a"] | `a.b` should be the only field in `a` |
+| ["a"] | ["a.b"] | `a` should be included, but it should not include `a.b` |
+
+In this example, `include` is missing:
+
+```json
+{
+  "fields": {
+    "exclude": ["geometry"]
+  }
+}
+```
+
+In these two examples, `include` is `null` and empty, respectively:
+
+```json
+{
+  "fields": {
+    "include": null,
+    "exclude": ["geometry"]
+  }
+}
+```
+
+```json
+{
+  "fields": {
+    "include": [],
+    "exclude": ["geometry"]
+  }
+}
+```
+
+The special case of both `include` and `exclude` missing is possible both in
+JSON and text. In JSON:
+
+```json
+{
+  "fields": {}
+}
+```
+
+or
+
+```json
+{
+  "fields": null
+}
+```
+
+In text:
+
+```text
+?fields=
+```
+
+It is not possible to differentiate between missing, null, and empty for the
+text representation, so implementations should assume the value is empty, NOT
+missing. For example, this is a case of `include` being empty (NOT missing):
+
+```text
+?fields=-geometry
+```
 
 ## Examples
 
-Return baseline fields.  This **must** return valid STAC Item entities. 
+### Default fields
+
+Return the default fields. This should return valid STAC Item entities.
 
 Query Parameters
-```http
+
+```text
 ?fields=
 ```
 
 JSON
+
 ```json
 {
   "fields": {
@@ -101,14 +202,21 @@ JSON
 }
 ```
 
-This has a similar effect as an empty object for `fields`, but it is up to the discretion of the implementation 
+### Explicitly get a valid STAC Item
+
+Because implementations may choose to always include other fields (e.g.,
+extension-specific fields such as
+[sar](https://github.com/stac-extensions/sar)), this could has the same effect
+as an empty object for `fields`.
 
 Query Parameters
-```http
-?fields=id,type,geometry,bbox,properties,links,assets
+
+```text
+?fields=id,type,geometry,bbox,properties.datetime,links,assets,stac_version
 ```
 
 JSON
+
 ```json
 {
   "fields": {
@@ -117,22 +225,27 @@ JSON
       "type",
       "geometry",
       "bbox",
-      "properties",
+      "properties.datetime",
       "links",
-      "assets"
+      "assets",
+      "stac_version",
     ]
   }
 }
 ```
 
-Exclude `geometry` from the baseline fields.  This **must** return an entity that is not a valid GeoJSON Feature or a valid STAC Item.
+### Exclude geometry
+
+Exclude `geometry` from the full item.  This will return an entity that is not a valid GeoJSON Feature or a valid STAC Item.
 
 Query Parameters
-```http
+
+```text
 ?fields=-geometry
 ```
 
 JSON
+
 ```json
 {
   "fields": {
@@ -143,17 +256,21 @@ JSON
 }
 ```
 
-To return the `id`, `type`, `geometry`, and the Properties attribute `eo:cloud_cover`.
-This **must** return a valid STAC Item, as the includes are added to the default includes.
-Explicitly specifying `id`, `type`, and `geometry` has not effect as these are default fields,
-but `properties.eo:cloud_cover` is not a default field and thereby should be in the response.
+### Minimal subset
+
+Return the `id`, `type`, `geometry`, and the Properties field `eo:cloud_cover`.
+This is not guaranteed not return a valid STAC Item, since not all required Item
+fields are included, but an implementor may choose to return a valid STAC
+item anyways.
 
 Query Parameters
-```http
+
+```text
 ?fields=id,type,geometry,properties.eo:cloud_cover
 ```
 
 JSON
+
 ```json
 {
   "fields": {
@@ -167,19 +284,24 @@ JSON
 }
 ```
 
+### Exclude a nested fiels
+
 To include `id` and all the properties fields, except for the `foo` field.
 
 Query Parameters
-```http
+
+```text
 ?fields=id,properties,-properties.foo
 ```
 
 also valid:
-```http
+
+```text
 ?fields=+id,+properties,-properties.foo
 ```
 
 JSON
+
 ```json
 {
   "fields": {

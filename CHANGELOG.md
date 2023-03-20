@@ -1,8 +1,15 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Changed
+
+- Include/exclude semantics are more precisely defined ([#5](https://github.com/stac-api-extensions/fields/pull/5))
 
 ## [v1.0.0-rc.2] - 2022-11-01
 
