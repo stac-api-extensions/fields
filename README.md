@@ -3,7 +3,13 @@
 - [STAC API - Fields Extension Specification](#stac-api---fields-extension-specification)
   - [Overview](#overview)
   - [Include/Exclude Semantics](#includeexclude-semantics)
+    - [`null` vs. empty vs. missing](#null-vs-empty-vs-missing)
   - [Examples](#examples)
+    - [Default fields](#default-fields)
+    - [Explicitly get a valid STAC Item](#explicitly-get-a-valid-stac-item)
+    - [Exclude geometry](#exclude-geometry)
+    - [Minimal subset](#minimal-subset)
+    - [Exclude a nested fiels](#exclude-a-nested-fiels)
 
 ## Overview
 
@@ -71,29 +77,32 @@ name, e.g., `properties.datetime` or `datetime`.
 
 ## Include/Exclude Semantics
 
-1. If `fields` attribute is specified as an empty string (GET requests) or as an empty object or an object with both `include` and `exclude` set to either null or an
-empty array (for POST requests), then the recommended behavior is to include only fields
-`type`, `stac_version`, `id`, `geometry`, `bbox`, `links`, `assets`, and `properties.datetime`. If `properties.datetime` is null, then it is recommended to include `properties.start_datetime` and `properties.end_datetime`.
-These are the default fields to ensure a valid STAC Item is returned by default.
-Implementations may choose to include other properties, e.g., `properties.created`, but the number
-of default properties fields should be kept to a minimum.
+1. If `fields` attribute is specified as an empty string (GET requests) or as an
+   empty object or an object with both `include` and `exclude` set to either null
+   or an empty array (for POST requests), then the recommended behavior is to include
+   only fields `type`, `stac_version`, `id`, `geometry`, `bbox`, `links`, `assets`,
+   and `properties.datetime`. If `properties.datetime` is null, then it is recommended
+   to include `properties.start_datetime` and `properties.end_datetime`.
+   These are the default fields to ensure a valid STAC Item is returned by default.
+   Implementations may choose to include other properties, e.g., `properties.created`,
+   but the number of default properties fields should be kept to a minimum.
 2. If only `include` is specified, these fields should be the only fields included.
-Any additional fields provided beyond those in the `include` list should be kept
-to a minimum, as the caller has explicitly stated they do not need them.
+   Any additional fields provided beyond those in the `include` list should be kept
+   to a minimum, as the caller has explicitly stated they do not need them.
 3. If only `exclude` is specified, the specified fields should not be
-included, but every other field available for the
-Item should be included.
+   included, but every other field available for the
+   Item should be included.
 4. If `exclude` is specified and `include` is null or an empty
-array, then the `exclude` fields should be excluded from the default set.
+   array, then the `exclude` fields should be excluded from the default set.
 5. For nested fields (e.g., `properties.datetime`), the most specific path
-should be honored first, and `include` should be preferred over `exclude`. For
-example:
-    1. If a field is in `exclude`, and a nested field of that field is in
+   should be honored first, and `include` should be preferred over `exclude`. For
+   example:
+   1. If a field is in `exclude`, and a nested field of that field is in
     `include`, the nested field should be included, but no other nested
     fields in the field should be included.  For example, if `properties` is
     excluded and `properties.datetime` is included, then `datetime`
     should be the only nested field in `properties`.
-    2. If a field is in `include`, and a nested field of that field is in `exclude`, the field
+   2. If a field is in `include`, and a nested field of that field is in `exclude`, the field
     should be included, and the nested field should be excluded.  For example,
     if `properties` is included and `properties.datetime` is excluded, then
     `datetime` should not be in `properties`, but every other nested field should be.
@@ -109,16 +118,16 @@ above](#includeexclude-semantics), but is summarized here for reference. "ALL"
 means that all of the Item's fields should be returned; "DEFAULT" means the
 default set (i.e. the required fields for a valid STAC Item) should be returned.
 
-| include | exclude | returned |
-| -- | -- | -- |
-| missing, `null`, or empty | missing, `null`, or empty | DEFAULT |
-| ["a", "b"] | missing, `null`, or empty | ["a", "b"] |
-| missing | ["a", "b"] | ALL except for ["a", "b"] |
-| `null` or empty | ["a", "b"] | DEFAULT except for ["a", "b"] |
-| ["a", "b"] | ["a"] | ["a", "b"] |
-| ["a"] | ["a", "b"] | ["a"] |
-| ["a.b"] | ["a"] | `a.b` should be the only field in `a` |
-| ["a"] | ["a.b"] | `a` should be included, but it should not include `a.b` |
+| include                   | exclude                   | returned                                                |
+| ------------------------- | ------------------------- | ------------------------------------------------------- |
+| missing, `null`, or empty | missing, `null`, or empty | DEFAULT                                                 |
+| ["a", "b"]                | missing, `null`, or empty | ["a", "b"]                                              |
+| missing                   | ["a", "b"]                | ALL except for ["a", "b"]                               |
+| `null` or empty           | ["a", "b"]                | DEFAULT except for ["a", "b"]                           |
+| ["a", "b"]                | ["a"]                     | ["a", "b"]                                              |
+| ["a"]                     | ["a", "b"]                | ["a"]                                                   |
+| ["a.b"]                   | ["a"]                     | `a.b` should be the only field in `a`                   |
+| ["a"]                     | ["a.b"]                   | `a` should be included, but it should not include `a.b` |
 
 In this example, `include` is missing:
 

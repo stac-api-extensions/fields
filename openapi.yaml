@@ -1,8 +1,17 @@
 openapi: 3.0.3
 info:
-  title: The SpatioTemporal Asset Catalog API - Fields
-  description: Adds parameter to control which fields are returned in the response.
+  title: STAC API - Fields Extension
   version: 1.0.0-rc.2
+  description: Adds parameter to control which fields are returned in the response.
+  contact:
+    name: STAC Specification
+    url: 'http://stacspec.org'
+  license:
+    name: Apache License 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+  x-conformance-classes:
+    - 'https://api.stacspec.org/v1.0.0-rc.2/item-search#fields'
+    - 'https://api.stacspec.org/v1.0.0-rc.2/ogcapi-features#fields'
 paths: {}
 components:
   parameters:
