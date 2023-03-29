@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: STAC API - Fields Extension
-  version: 1.0.0-rc.2
+  version: 1.0.0-rc.3
   description: Adds parameter to control which fields are returned in the response.
   contact:
     name: STAC Specification
@@ -10,8 +10,8 @@ info:
     name: Apache License 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0'
   x-conformance-classes:
-    - 'https://api.stacspec.org/v1.0.0-rc.2/item-search#fields'
-    - 'https://api.stacspec.org/v1.0.0-rc.2/ogcapi-features#fields'
+    - 'https://api.stacspec.org/v1.0.0-rc.3/item-search#fields'
+    - 'https://api.stacspec.org/v1.0.0-rc.3/ogcapi-features#fields'
 paths: {}
 components:
   parameters:
