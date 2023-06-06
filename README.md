@@ -89,11 +89,12 @@ name, e.g., `properties.datetime` or `datetime`.
 2. If only `include` is specified, these fields should be the only fields included.
    Any additional fields provided beyond those in the `include` list should be kept
    to a minimum, as the caller has explicitly stated they do not need them.
-3. If only `exclude` is specified, the specified fields should not be
-   included, but every other field available for the
-   Item should be included.
-4. If `exclude` is specified and `include` is null or an empty
-   array, then the `exclude` fields should be excluded from the default set.
+3. For POST requests, if only `exclude` is specified, the specified fields
+   should not be included, but every other field available for the Item should be
+   included.
+4. For POST requests, if `exclude` is specified and `include` is null or an
+   empty array, then the `exclude` fields should be excluded from the default set.
+   This also applies to GET requests when only `exclude` fields are specified.
 5. For nested fields (e.g., `properties.datetime`), the most specific path
    should be honored first, and `include` should be preferred over `exclude`. For
    example:
