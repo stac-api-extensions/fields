@@ -39,7 +39,8 @@ None
 Versions [v1.0.0-rc.1](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1) and
 prior can be found in the [stac-api-spec](https://github.com/radiantearth/stac-api-spec/) repo
 
-[Unreleased]: <https://github.com/stac-api-extensions/fields/compare/v1.0.0-rc.3...main>
+[Unreleased]: <https://github.com/stac-api-extensions/fields/compare/v1.0.0...main>
+[v1.0.0]: <https://github.com/stac-api-extensions/fields/tree/v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-api-extensions/fields/tree/v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-api-extensions/fields/tree/v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/radiantearth/stac-api-spec/tree/v1.0.0-rc.1>
