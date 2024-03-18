@@ -294,7 +294,7 @@ JSON
 }
 ```
 
-### Exclude a nested fiels
+### Exclude a nested field
 
 To include `id` and all the properties fields, except for the `foo` field.
 
