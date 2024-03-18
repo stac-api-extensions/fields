@@ -9,7 +9,7 @@
     - [Explicitly get a valid STAC Item](#explicitly-get-a-valid-stac-item)
     - [Exclude geometry](#exclude-geometry)
     - [Minimal subset](#minimal-subset)
-    - [Exclude a nested fiels](#exclude-a-nested-fiels)
+    - [Exclude a nested field](#exclude-a-nested-field)
 
 ## Overview
 
@@ -100,13 +100,13 @@ name, e.g., `properties.datetime` or `datetime`.
    example:
    1. If a field is in `exclude`, and a nested field of that field is in
     `include`, the nested field should be included, but no other nested
-    fields in the field should be included.  For example, if `properties` is
-    excluded and `properties.datetime` is included, then `datetime`
-    should be the only nested field in `properties`.
+     fields in the field should be included.  For example, if `properties` is
+     excluded and `properties.datetime` is included, then `datetime`
+     should be the only nested field in `properties`.
    2. If a field is in `include`, and a nested field of that field is in `exclude`, the field
     should be included, and the nested field should be excluded.  For example,
-    if `properties` is included and `properties.datetime` is excluded, then
-    `datetime` should not be in `properties`, but every other nested field should be.
+     if `properties` is included and `properties.datetime` is excluded, then
+     `datetime` should not be in `properties`, but every other nested field should be.
 6. If the same field is present in both `include` and `exclude`, it should be included.
 7. If a field is not present in `include`, but it is present in `exclude`, it should be excluded.
 
@@ -294,7 +294,7 @@ JSON
 }
 ```
 
-### Exclude a nested fiels
+### Exclude a nested field
 
 To include `id` and all the properties fields, except for the `foo` field.
 
