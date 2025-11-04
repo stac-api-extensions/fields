@@ -6,7 +6,7 @@
     - [`null` vs. empty vs. missing](#null-vs-empty-vs-missing)
   - [Examples](#examples)
     - [Default fields](#default-fields)
-    - [Explicitly get a valid STAC Item](#explicitly-get-a-valid-stac-item)
+    - [Explicitly get a valid STAC entity](#explicitly-get-a-valid-stac-entity)
     - [Exclude geometry](#exclude-geometry)
     - [Minimal subset](#minimal-subset)
     - [Exclude a nested field](#exclude-a-nested-field)
@@ -17,56 +17,62 @@
 - **OpenAPI specification:** [openapi.yaml](openapi.yaml)
 - **Conformance Classes:**
   - `STAC API - Item Search` binding: <https://api.stacspec.org/v1.0.0/item-search#fields>
+  - `STAC API - Collections / Collection Search` binding: <https://api.stacspec.org/v1.0.0/collection-search#fields>
   - `STAC API - Features` binding: <https://api.stacspec.org/v1.0.0/ogcapi-features#fields>
-- **Scope:** STAC API - Features, STAC API - Item Search
+- **Scope:** STAC API - Features, STAC API - Item Search, STAC API - Collections
 - **[Extension Maturity Classification](https://github.com/radiantearth/stac-api-spec/tree/main/README.md#maturity-classification):** Candidate
 - **Dependencies:**
   - [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/item-search)
-  - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features)
+  - [STAC API - Collections](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features#stac-api---collections)
+  - [STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features#stac-api---features)
 - **Owner**: none
 
-By default, STAC API endpoints that return Item objects return every field of those Items. However,
-Item objects can have hundreds of fields, or large
-geometries, and even smaller Item objects can add up when large numbers of them are in results. Frequently, not all
-fields in an Item are used, so this
+By default, STAC API endpoints that return Item and Collection objects return every field of those.
+However, Item objects can have hundreds of fields, or large geometries,
+Collection objects may have a large number of links,
+and even smaller Item or Collection objects can add up when large numbers of them are in results.
+Frequently, not all fields in an Item or Collection are used, so this
 specification provides a mechanism for clients to request that servers to explicitly include or exclude certain fields.
 
-This behavior may be bound to either or both of 
+This behavior may be bound to either or both of
 [STAC API - Item Search](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/item-search) (`/search` endpoint) or
-[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features)
+[STAC API - Collections](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features#stac-api---collections) 
+(`/collections` endpoint) or
+[STAC API - Features](https://github.com/radiantearth/stac-api-spec/tree/v1.0.0/ogcapi-features#stac-api---features)
 (`/collections/{collectionId}/items` endpoint) by advertising the relevant conformance class.
 
-When used in a POST request with `Content-Type: application/json`, this adds an attribute `fields` with 
-an object value to the core JSON search request body. The `fields` object contains two attributes with string array 
+When used in a POST request with `Content-Type: application/json`, this adds an attribute `fields` with
+an object value to the core JSON search request body. The `fields` object contains two attributes with string array
 values, `include` and `exclude`.
 
-When used with GET, the semantics are the same, except the syntax is a single parameter `fields` with 
-a comma-separated list of field names, where `exclude` values are those prefixed by a `-` and `include` values are 
+When used with GET, the semantics are the same, except the syntax is a single parameter `fields` with
+a comma-separated list of field names, where `exclude` values are those prefixed by a `-` and `include` values are
 those with no prefix, e.g., `-geometry`, or `id,-geometry,properties`.
 
-It is recommended that implementations provide exactly the `include` and `exclude` sets specified by the request, 
-but this is not required. These values are only hints to the server as to the desires of the client, and not a 
-contract about what the response will be. Implementations are still considered compliant if fields not specified as part of `include` 
-are in the response or ones specified as part of `exclude` are.  For example, implementations may choose to always 
-include simple string fields like `id` and `type` regardless of the `exclude` specification. However, it is recommended 
-that implementations honor excludes for fields with more complex and arbitrarily large values 
-(e.g., `geometry`, `assets`).  For example, some Item objects may have a geometry with a simple 5 point polygon, but these 
+It is recommended that implementations provide exactly the `include` and `exclude` sets specified by the request,
+but this is not required. These values are only hints to the server as to the desires of the client, and not a
+contract about what the response will be. Implementations are still considered compliant if fields not specified as part of `include`
+are in the response or ones specified as part of `exclude` are.  For example, implementations may choose to always
+include simple string fields like `id` and `type` regardless of the `exclude` specification. However, it is recommended
+that implementations honor excludes for fields with more complex and arbitrarily large values
+(e.g., `geometry`, `assets`).  For example, some Item objects may have a geometry with a simple 5 point polygon, but these
 polygons can be very large when reprojected to EPSG:4326, as in the case of a highly-decimated sinusoidal polygons.
 Implementations are also not required to implement semantics for nested values whereby one can include an object, but
 exclude fields of that object, e.g., include `properties` but exclude `properties.datetime`.
 
-No error must be returned if a specified field has no value for it in the catalog. For example, if the field 
+No error must be returned if a specified field has no value for it in the catalog. For example, if the field
 "properties.eo:cloud_cover" is specified but there is no cloud cover value for an Item, a successful HTTP response
-must be returned and the Item entities will not contain that 
-field. 
+must be returned and the Item entities will not contain that
+field.
 
 If no `fields` are specified, the response is **must** be a valid
-[ItemCollection](https://github.com/radiantearth/stac-spec/tree/v1.0.0/itemcollection/README.md). If a client excludes
-fields that are required in a STAC Item, the server may return an invalid STAC Item. For example, if `type` 
-and `geometry` are excluded, the entity will not even be a valid GeoJSON Feature, or if `bbox` is excluded then the entity 
+[ItemCollection](https://github.com/radiantearth/stac-spec/tree/v1.0.0/itemcollection/README.md) or
+or list of collections (according to the specification for `GET /collections`). If a client excludes
+fields that are required in a STAC Item or Collection, the server may return an invalid STAC Item or Collection. For example, if `type`
+and `geometry` are excluded, the entity will not even be a valid GeoJSON Feature, or if `bbox` is excluded then the entity
 will not be a valid STAC Item.
 
-Implementations may return fields not specified, e.g., id, but must avoid anything other than a minimal entity 
+Implementations may return fields not specified, e.g., id, but must avoid anything other than a minimal entity
 representation.
 
 This specification does not yet require the implementation of an "-ables" endpoint (like CQL2 does for queryables)
@@ -212,7 +218,7 @@ JSON
 }
 ```
 
-### Explicitly get a valid STAC Item
+### Explicitly get a valid STAC entity
 
 Because implementations may choose to always include other fields (e.g.,
 extension-specific fields such as
